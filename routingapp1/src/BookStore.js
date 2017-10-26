@@ -14,10 +14,28 @@ class BookStore {
     get books() {
         return this._books;
     }
+
     addBook(book) {
         book.id = this._nextID;
         this._books.push(book);
         this._nextID++;
+    }
+
+    deleteBook(id) {
+        let book = this.findBook(id);
+        if (book !== null) {
+            let index = this._books.indexOf(book);
+            this._books.splice(index, 1);
+        }
+    }
+
+    findBook = (id) => {
+        for (let book of this._books) {
+            if (book.id === id) {
+                return book;
+            }
+        }
+        return null;
     }
 }
 

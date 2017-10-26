@@ -9,24 +9,47 @@ class AddBook extends React.Component {
         super(props);
         this.state = { "book": { title: "", info: "" }, isDirty: false }
     }
-    onSave = () => { }
-    onChange = (e) => { }
+
+    onSave = () => {
+        let book = this.state.book;
+        if (book.info.trim() !== "" && book.info.trim() !== "") {
+            this.props.bookStore.addBook(book);
+            this.setState({
+                "book": { title: "", info: "" }, isDirty: false
+            });
+            this.props.onAddBook()
+        } else {
+            alert("enter proper values...")
+        }
+    }
+
+    onChange = (e) => {
+        const target = e.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState(prevState => (
+            {
+                book: { ...prevState.book, [name]: value },
+                isDirty: true
+            }
+        ));
+    }
+
     render() {
         return (
             <div>
-                Title: <input name="title" />
-                Info: <input name="info" />
+                Title: <input name="title" onChange={this.onChange} value={this.state.book.title} />
+                Info: <input name="info" onChange={this.onChange} value={this.state.book.info} />
                 <button onClick={this.onSave}>Save</button>
-                {/*
-         <Prompt
-         when={this.state.isDirty}
-         message="Yoy have unsaved data that will be lost!"
-         />*/}
+                {
+                    <Prompt
+                        when={this.state.isDirty}
+                        message="You have unsaved data that will be lost!"
+                    />}
             </div>
         )
     }
 }
-
 
 //Views start
 const Home = () => (
@@ -56,7 +79,6 @@ class Product extends React.Component {
         this.forceUpdate();
     }
 
-
     render() {
         const books = this.state.bookStore.books;
         let bookStore = this.state.bookStore;
@@ -72,8 +94,7 @@ class Product extends React.Component {
             <Link to={`${match.url}/add`}>Add book</Link>
 
             <div style={{ backgroundColor: "lightGray", padding: 5, marginTop: 10 }}>
-                <Route path={`${match.url}/add`} render={(props) => <AddBook bookStore={bookStore}
-                    onAddBook={this.onBookWasAdded} />} />
+                <Route path={`${match.url}/add`} render={(props) => <AddBook bookStore={bookStore} onAddBook={this.onBookWasAdded} />} />
                 <Route path={`${match.url}/detail/:id`} render={(props) => {
                     return (<Details {...props} bookStore={bookStore} />)
                 }} />
@@ -81,7 +102,6 @@ class Product extends React.Component {
         </div>)
     }
 }
-//Views end
 
 class Details extends React.Component {
     render() {
